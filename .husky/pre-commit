@@ -1,1 +1,2 @@
+echo 'Запуск pre-commit'
 npx lint-staged
