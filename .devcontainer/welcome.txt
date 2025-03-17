@@ -1,0 +1,3 @@
+👋 Welcome to devcontainer environment of the "UMRS API" project!
+
+🛠️  Your environment is fully setup with all the required software.
