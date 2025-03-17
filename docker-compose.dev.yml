@@ -1,22 +1,25 @@
 services:
   umrs-api:
-    container_name: umrs-api-prod
-    image: b216/umrs:prod
+    container_name: umrs-api-dev
+    image: b216/umrs:dev
     build:
       context: .
-      dockerfile: Dockerfile
-    user: 1000:1000
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .devcontainer/.env
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     volumes:
       - .:/usr/src/app
     depends_on:
       - pgbouncer
 
   pgbouncer:
-    container_name: pgbouncer-prod
+    env_file:
+      - .devcontainer/.env
+    container_name: pgbouncer-dev
     image: pgbouncer/pgbouncer
     ports:
       - "${DB_PORT}:5432"
@@ -29,11 +32,12 @@ services:
       - database
 
   database:
-    container_name: database-prod
+    env_file:
+      - .devcontainer/.env
+    container_name: database-dev
     image: postgres:latest
     environment:
-      # superuser password
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # superuser password
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_DB=${DB_NAME}
     volumes:
