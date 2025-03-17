@@ -2,8 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
+  const environment = process.env.NODE_ENV || 'production';
+
+  const envFilePath =
+    environment === 'development' ? '.devcontainer/.local.env' : '.env';
+  dotenv.config({ path: envFilePath });
+
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
