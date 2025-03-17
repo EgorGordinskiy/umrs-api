@@ -7,7 +7,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      - NODE_ENV=development  # Set to 'production' for production
+      - NODE_ENV=development
     volumes:
       - ..:/usr/src/app
     depends_on:
@@ -30,8 +30,7 @@ services:
     container_name: database-dev
     image: postgres:latest
     environment:
-      # superuser password
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_PASSWORD=${DB_PASSWORD} # superuser password
       - POSTGRES_USER=${DB_USERNAME}
       - POSTGRES_DB=${DB_NAME}
     volumes:
