@@ -14,6 +14,14 @@ services:
     volumes:
       - .:/usr/src/app
     depends_on:
+      - keycloak
+      
+  keycloak:
+    container_name: keycloak
+    image: bitnami/keycloak:latest
+    ports:
+      - "8080:8080"
+    depends_on:
       - pgbouncer
 
   pgbouncer:
@@ -38,8 +46,7 @@ services:
     image: postgres:latest
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD} # superuser password
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME} # create the specified user with superuser power and a database with the same name if no POSTGRES_DB is specified
     volumes:
       - db-data:/var/lib/postgresql/data
 
