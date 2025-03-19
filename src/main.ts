@@ -5,11 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 
 async function bootstrap() {
-  const environment = process.env.NODE_ENV || 'production';
+  // const environment = process.env.NODE_ENV || 'production';
 
-  const envFilePath =
-    environment === 'development' ? '.devcontainer/.local.env' : '.env';
-  dotenv.config({ path: envFilePath });
+  // const envFilePath =
+  //   environment === 'development' ? '../../.env.example' : '.env'; // TODO pass .env with help of nestjs's config
+  // dotenv.config({ path: envFilePath });
 
   const app = await NestFactory.create(AppModule);
 
