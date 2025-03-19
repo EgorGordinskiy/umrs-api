@@ -16,7 +16,7 @@ services:
     depends_on:
       - keycloak
       
-  keycloak-official:
+  keycloak:
     env_file:
       - .devcontainer/.env
     container_name: keycloak
