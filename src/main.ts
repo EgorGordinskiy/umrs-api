@@ -2,18 +2,22 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import * as dotenv from 'dotenv';
 
 async function bootstrap() {
-  // const environment = process.env.NODE_ENV || 'production';
-
-  // const envFilePath =
-  //   environment === 'development' ? '../../.env.example' : '.env'; // TODO pass .env with help of nestjs's config
-  // dotenv.config({ path: envFilePath });
+  const defaultBackendHost = 'http://localhost';
+  const defaultPrefix = 'api';
+  const defaultFrontendHost = 'http://localhost';
 
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix(process.env.BACKEND_PREFIX ?? defaultPrefix);
+
+  app.enableCors({
+    origin: process.env.APP_HOST ?? defaultFrontendHost,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // cookies, authorization headers
+  });
 
   app.useGlobalPipes(new ValidationPipe());
 
@@ -26,7 +30,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? defaultBackendHost);
 }
 
 bootstrap();
