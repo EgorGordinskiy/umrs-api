@@ -16,11 +16,20 @@ services:
     depends_on:
       - keycloak
       
-  keycloak:
+  keycloak-official:
+    env_file:
+      - .devcontainer/.env
     container_name: keycloak
-    image: bitnami/keycloak:latest
+    image: quay.io/keycloak/keycloak:26.1.4
+    environment:
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_DB_URL_HOST=pgbouncer
+      - KC_DB_URL_PORT=${DB_PORT}
     ports:
       - "8080:8080"
+    command: start-dev
     depends_on:
       - pgbouncer
 
@@ -28,7 +37,7 @@ services:
     env_file:
       - .devcontainer/.env
     container_name: pgbouncer-dev
-    image: pgbouncer/pgbouncer
+    image: pgbouncer/pgbouncer:1.15.0
     ports:
       - "${DB_PORT}:5432"
     environment:
@@ -36,6 +45,7 @@ services:
       - DATABASES_PASSWORD=${DB_PASSWORD}
       - DATABASES_DBNAME=${DB_NAME}
       - DATABASES_HOST=${DB_HOST}
+      - PGBOUNCER_LISTEN_PORT=${DB_PORT}
     depends_on:
       - database
 
@@ -43,7 +53,7 @@ services:
     env_file:
       - .devcontainer/.env
     container_name: database-dev
-    image: postgres:latest
+    image: postgres:17.4
     environment:
       - POSTGRES_PASSWORD=${DB_PASSWORD} # superuser password
       - POSTGRES_USER=${DB_USERNAME} # create the specified user with superuser power and a database with the same name if no POSTGRES_DB is specified
