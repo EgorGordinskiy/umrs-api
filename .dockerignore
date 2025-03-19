@@ -3,6 +3,6 @@ dist
 *.log
 *.md
 .git
-Dockerfile
+Dockerfile*
 .dockerignore
 npm-debug.log
