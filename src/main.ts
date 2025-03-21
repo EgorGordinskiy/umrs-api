@@ -7,6 +7,7 @@ async function bootstrap() {
   const defaultBackendHost = 'http://localhost';
   const defaultPrefix = 'api';
   const defaultFrontendHost = 'http://localhost';
+  const defaultPort = '3000';
 
   const app = await NestFactory.create(AppModule);
 
@@ -30,7 +31,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, documentFactory);
 
-  await app.listen(process.env.PORT ?? defaultBackendHost);
+  await app.listen(process.env.PORT ?? defaultPort);
 }
 
 bootstrap();
