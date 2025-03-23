@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { EmailModule } from './modules/email/email.module';
+import { GisModule } from './modules/gis/gis.module';
 
 @Module({
   imports: [
@@ -15,10 +15,10 @@ import { EmailModule } from './modules/email/email.module';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [],
+      autoLoadEntities: true,
       synchronize: false,
     }),
-    EmailModule,
+    GisModule,
   ],
 })
 export class AppModule {}
