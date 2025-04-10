@@ -14,7 +14,7 @@ export abstract class BaseServiceImpl<
   UpdateDto extends DeepPartial<T>,
 > implements BaseService<T, CreateDto, UpdateDto>
 {
-  constructor(protected readonly repository: Repository<T>) {}
+  protected constructor(protected readonly repository: Repository<T>) {}
 
   public async findAll(): Promise<T[]> {
     return this.repository.find({ cache: 60000 });
