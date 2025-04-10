@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { GisModule } from './modules/gis/gis.module';
+import { InfographicsModule } from './modules/infographics/infographics.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GisModule } from './modules/gis/gis.module';
       synchronize: false,
     }),
     GisModule,
+    InfographicsModule,
   ],
 })
 export class AppModule {}
