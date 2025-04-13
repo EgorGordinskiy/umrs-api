@@ -1,0 +1,87 @@
+{
+  "content": [
+    {
+      "type": "section",
+      "id": "personal-info",
+      "title": "Персональные данные",
+      "fields": [
+        {
+          "id": "full-name",
+          "type": "text",
+          "label": "ФИО",
+          "required": true,
+          "min": 1,
+          "max": 255
+        }
+      ]
+    },
+    {
+      "type": "dynamic-list",
+      "id": "movement-list",
+      "label": "Перевижения",
+      "count": 1,
+      "minItems": 3,
+      "maxItems": 24,
+      "item": {
+        "fields": [
+          {
+            "id": "full-name",
+            "type": "text",
+            "label": "ФИО",
+            "required": true,
+            "min": 1,
+            "max": 255
+          }
+        ],
+        "actions": [
+          {
+            "type": "remove-list-item",
+            "label": "Удалить передвижение"
+          }
+        ]
+      },
+      "fields": [
+        {
+          "id": "full-name",
+          "type": "text",
+          "label": "ФИО",
+          "required": true,
+          "min": 1,
+          "max": 255
+        }
+      ],
+      "actions": [
+        {
+          "type": "add-list-item",
+          "label": "Добавить передвижение"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "id": "work-experience",
+      "title": "Опыт работы",
+      "fields": [
+        {
+          "id": "has-experience",
+          "type": "radio",
+          "label": "Есть опыт работы?",
+          "options": [
+            { "value": "yes", "label": "Да" },
+            { "value": "no", "label": "Нет" }
+          ]
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "send-form",
+      "label": "Отправить"
+    },
+    {
+      "type": "clean-form",
+      "label": "Сбросить"
+    }
+  ]
+}
