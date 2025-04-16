@@ -8,7 +8,8 @@ import {
   IsString,
   Min,
 } from 'class-validator';
-import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { FilterConditionDtoSwaggerProperty } from './request-data.dto.swagger';
 
 export class FilterConditionDTO {
   @ApiProperty({ required: false })
@@ -68,25 +69,11 @@ export class DataRequestDTO {
   fields: string[];
 
   @IsObject()
-  @ApiProperty({
-    type: 'object',
-    additionalProperties: {
-      $ref: getSchemaPath(FilterConditionDTO),
-    },
-    example: {
-      key1: {
-        like: 'example',
-        eq: 'specificValue',
-      },
-      key2: {
-        neq: 'anotherValue',
-      },
-    },
-  })
+  @FilterConditionDtoSwaggerProperty()
   filter: { [key: string]: FilterConditionDTO };
 
   @IsObject()
-  @ApiProperty()
+  @ApiProperty({ enum: ['ASC', 'DESC'] })
   sort: { [key: string]: 'ASC' | 'DESC' };
 
   @IsObject()

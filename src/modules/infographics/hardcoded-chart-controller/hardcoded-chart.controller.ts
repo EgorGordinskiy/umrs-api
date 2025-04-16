@@ -6,8 +6,11 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
 import { DataRequestDTO } from './request-data.dto';
+import {
+  GetHardcodedGraphSwaggerBody,
+  GetHardcodedGraphSwaggerOperation,
+} from './hardcoded-chart.controller.swagger';
 
 interface GraphDataPoint {
   timestamp: string;
@@ -23,7 +26,8 @@ export class HardcodedChartController {
   logger = new Logger(HardcodedChartController.name);
 
   @Get()
-  @ApiOperation({ summary: 'Получить данные тестового графика' })
+  @GetHardcodedGraphSwaggerOperation()
+  @GetHardcodedGraphSwaggerBody()
   @UsePipes(new ValidationPipe())
   public getHardcodedGraph(
     @Body() getDataDto: DataRequestDTO,
