@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
-  Get,
   Logger,
+  Post,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -25,7 +25,7 @@ interface GraphData {
 export class HardcodedChartController {
   logger = new Logger(HardcodedChartController.name);
 
-  @Get()
+  @Post()
   @GetHardcodedGraphSwaggerOperation()
   @GetHardcodedGraphSwaggerBody()
   @UsePipes(new ValidationPipe())
