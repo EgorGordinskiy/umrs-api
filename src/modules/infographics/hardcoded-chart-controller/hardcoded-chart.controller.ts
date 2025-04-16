@@ -1,5 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
+import { DataRequestDTO } from './request-data.dto';
 
 interface GraphDataPoint {
   timestamp: string;
@@ -12,9 +20,16 @@ interface GraphData {
 
 @Controller('hardcoded-chart')
 export class HardcodedChartController {
+  logger = new Logger(HardcodedChartController.name);
+
   @Get()
   @ApiOperation({ summary: 'Получить данные тестового графика' })
-  public getHardcodedGraph(): Promise<GraphData> {
+  @UsePipes(new ValidationPipe())
+  public getHardcodedGraph(
+    @Body() getDataDto: DataRequestDTO,
+  ): Promise<GraphData> {
+    this.logger.log('Get hardcoded graph was triggered');
+    this.logger.log(getDataDto);
     return Promise.resolve({
       data: [
         { timestamp: '2025-01-01T00:00:00.000Z', value: 10 },
