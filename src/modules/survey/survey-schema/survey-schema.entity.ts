@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   Column,
   CreateDateColumn,
@@ -108,6 +109,8 @@ export interface BaseField {
   required: boolean;
   /** Видимость */
   visible?: boolean | VisibilityCondition;
+  /** Значение по умолчанию */
+  defaultValue?: any;
 }
 
 /** Текстовое поле */
@@ -121,6 +124,7 @@ export interface TextField extends BaseField {
   type: 'text';
   minLength?: number;
   maxLength?: number;
+  multiline?: boolean;
 }
 
 /** Числовое поле */
@@ -128,12 +132,15 @@ export interface NumberField extends BaseField {
   type: 'number';
   min?: number;
   max?: number;
+  numberKind: 'integer' | 'float';
+  maxPrecision?: number;
 }
 
 /** Выпадающий список */
 export interface SelectField extends BaseField {
   type: 'select';
   options: Option[];
+  multiple?: boolean;
 }
 
 /** Группа радио-кнопок */
@@ -221,4 +228,5 @@ export type SurveyField =
   | SelectField
   | RadioField
   | CheckboxField
+  | AddressField
   | DateField;
