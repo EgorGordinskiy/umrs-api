@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { GisModule } from './modules/gis/gis.module';
 import { SurveyModule } from './modules/survey/survey.module';
+import { GisModule } from './modules/gis/gis.module';
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import { SurveyModule } from './modules/survey/survey.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: process.env.NODE_ENV === 'development',
     }),
     GisModule,
     SurveyModule,
