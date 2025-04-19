@@ -1,9 +1,9 @@
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
 
 config();
 
-const AppDataSource = new DataSource({
+export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
@@ -12,8 +12,14 @@ const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   entities: ['src/**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
-  synchronize: false,
-});
+  synchronize: process.env.NODE_ENV === 'development',
+
+  // логирование
+  logging: ['error'],
+  maxQueryExecutionTime: 5000, // логировать запросы, выполняющие более 5 с
+};
+
+const AppDataSource = new DataSource(dataSourceOptions);
 
 AppDataSource.initialize()
   .then(() => {
