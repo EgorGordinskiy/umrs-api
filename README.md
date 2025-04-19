@@ -99,3 +99,29 @@ DB_USERNAME=your-username
 DB_PASSWORD=your-password
 DB_NAME=your-database-name
 ```
+
+## Работа с БД
+Для миграций и других операций с БД используется [CLI typeorm](https://typeorm.io/using-cli)
+
+### Создание миграции
+
+Миграция требуется при:
+- добавлении новой таблицы
+- изменении структуры существующей таблицы
+- удалении таблицы
+
+```bash
+npm run migration:generate
+```
+
+### Запуск миграции
+
+```bash
+npm run migration:run
+```
+
+### Откат миграции
+
+```bash
+npm run migration:revert
+```
