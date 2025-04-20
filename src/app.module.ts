@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { SurveyModule } from './modules/survey/survey.module';
 import { GisModule } from './modules/gis/gis.module';
+import { InfographicsModule } from './modules/infographics/infographics.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { GisModule } from './modules/gis/gis.module';
     }),
     GisModule,
     SurveyModule,
+    InfographicsModule,
   ],
 })
 export class AppModule {}
