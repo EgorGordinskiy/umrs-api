@@ -5,9 +5,9 @@ import {
   Logger,
   UnauthorizedException,
 } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { OpenIdService } from './openid.service';
 import { Request } from 'express';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -17,30 +17,21 @@ export class AuthGuard implements CanActivate {
 
   canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  ): Promise<boolean> | boolean | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
-    const token = this.extractTokenFromHeader(request);
 
+    // вроде как это access token
+    const token = this.openIdService.extractTokenFromHeader(request);
+
+    // если токена нет, то надо его получить, начав flow
     if (!token) {
       throw new UnauthorizedException();
     }
 
     this.logger.log('Token: ' + token);
 
-    // const tokenInfo = await this.openIdService.validateToken(token);
-    //
-    // if (!tokenInfo || !tokenInfo.active) {
-    //   throw new UnauthorizedException();
-    // }
-
-    // Attach the token information to the request for use in controllers
-    // request['user'] = tokenInfo;
+    // todo а если он есть, то его ещё надо проверить
 
     return true;
-  }
-
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
   }
 }
