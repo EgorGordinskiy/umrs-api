@@ -5,7 +5,13 @@ import { Request as ExpressRequest } from 'express';
 export interface AuthFlow {
   code_verifier: string;
   redirect_uri: string;
+  cameFrom: string;
   created_at: Date;
+}
+
+export interface AuthState {
+  id: string;
+  cameFrom: string;
 }
 
 @Injectable()
@@ -22,10 +28,16 @@ export class OpenIdService implements OnModuleInit {
     this.config = await client.discovery(server, clientId, clientSecret);
   }
 
-  createAuthFlow(flowId: string, code_verifier: string, redirect_uri: string) {
+  createAuthFlow(
+    flowId: string,
+    code_verifier: string,
+    redirect_uri: string,
+    cameFrom: string,
+  ) {
     const flow: AuthFlow = {
       code_verifier,
       redirect_uri,
+      cameFrom,
       created_at: new Date(),
     };
 

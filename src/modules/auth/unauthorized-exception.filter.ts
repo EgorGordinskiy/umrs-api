@@ -18,6 +18,7 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
   async catch(_exception: UnauthorizedException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
 
     const scope = 'openid profile email';
 
@@ -57,6 +58,7 @@ export class UnauthorizedExceptionFilter implements ExceptionFilter {
       state,
       code_verifier,
       redirectTo.searchParams.get('redirect_uri')!,
+      request.url,
     );
 
     response.redirect(redirectTo.href);
