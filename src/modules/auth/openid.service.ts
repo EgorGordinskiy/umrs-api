@@ -1,10 +1,16 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as client from 'openid-client';
-import * as process from 'node:process';
-import { Request } from 'express';
+import { Request as ExpressRequest } from 'express';
+
+export interface AuthFlow {
+  code_verifier: string;
+  redirect_uri: string;
+  created_at: Date;
+}
 
 @Injectable()
 export class OpenIdService implements OnModuleInit {
+  private readonly flowStorage = new Map<string, AuthFlow>();
   public config: client.Configuration;
   private readonly logger = new Logger(OpenIdService.name);
 
@@ -14,11 +20,59 @@ export class OpenIdService implements OnModuleInit {
     const clientSecret = process.env.CLIENT_SECRET!;
 
     this.config = await client.discovery(server, clientId, clientSecret);
-    this.logger.log(this.config);
   }
 
-  public extractTokenFromHeader(request: Request): string | undefined {
+  createAuthFlow(flowId: string, code_verifier: string, redirect_uri: string) {
+    const flow: AuthFlow = {
+      code_verifier,
+      redirect_uri,
+      created_at: new Date(),
+    };
+
+    this.flowStorage.set(flowId, flow);
+
+    // Cleanup old flows periodically
+    this.cleanupOldFlows();
+
+    return flowId;
+  }
+
+  getAuthFlow(flowId: string): AuthFlow {
+    const flow = this.flowStorage.get(flowId);
+    if (!flow) throw new Error('Auth flow not found');
+    return flow;
+  }
+
+  private cleanupOldFlows() {
+    const expiryTime = 5 * 60 * 1000; // 5 minutes
+    const now = new Date();
+
+    for (const [id, flow] of this.flowStorage.entries()) {
+      if (now.getTime() - flow.created_at.getTime() > expiryTime) {
+        this.flowStorage.delete(id);
+      }
+    }
+  }
+
+  // Clean up method to remove stored values after they're no longer needed
+  public cleanupFlow(flowId: string): void {
+    this.flowStorage.delete(flowId);
+  }
+
+  public extractTokenFromHeader(request: ExpressRequest): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  public getCurrentUrl(baseUrl: string, request: Request): URL {
+    // Construct the full callback URL including query parameters
+    const callbackUrl = new URL(baseUrl);
+
+    // Add all query parameters from the request
+    const queryParams = new URLSearchParams(request.url.split('?')[1]);
+    for (const [key, value] of queryParams.entries()) {
+      callbackUrl.searchParams.append(key, value);
+    }
+    return callbackUrl;
   }
 }

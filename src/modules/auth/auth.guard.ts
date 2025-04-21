@@ -20,15 +20,12 @@ export class AuthGuard implements CanActivate {
   ): Promise<boolean> | boolean | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
 
-    // вроде как это access token
     const token = this.openIdService.extractTokenFromHeader(request);
 
     // если токена нет, то надо его получить, начав flow
     if (!token) {
       throw new UnauthorizedException();
     }
-
-    this.logger.log('Token: ' + token);
 
     // todo а если он есть, то его ещё надо проверить
 
