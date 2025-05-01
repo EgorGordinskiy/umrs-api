@@ -7,7 +7,7 @@ import { NotFoundException } from '@nestjs/common';
  * Интерфейс, который гарантирует наличие поля `id` в сущности.
  */
 export interface EntityWithId {
-  readonly id: number;
+  readonly id: unknown; // может быть string (uuid) или number
 }
 
 /**
@@ -32,7 +32,7 @@ export interface BaseService<
    * @returns {Promise<T>} Найденная сущность.
    * @throws {NotFoundException} Если сущность не найдена.
    */
-  findOne(id: number): Promise<T>;
+  findOne(id: number | string): Promise<T>;
   /**
    * Создать новую сущность.
    * @param {CreateDto} createDto - DTO для создания сущности.
@@ -55,17 +55,17 @@ export interface BaseService<
    * @param {UpdateDto} updateDto - DTO для обновления сущности.
    * @returns {Promise<T>} Обновленная сущность.
    */
-  update(id: number, updateDto: UpdateDto): Promise<T>;
+  update(id: number | string, updateDto: UpdateDto): Promise<T>;
   /**
    * Удалить сущность по ID.
    * @param {number} id - Идентификатор сущности.
    * @returns {Promise<void>}
    */
-  remove(id: number): Promise<void>;
+  remove(id: number | string): Promise<void>;
   /**
    * Проверяет, существует ли сущность c заданным id.
    * @param {DeepPartial<T>} id - ID.
    * @returns {Promise<boolean>} `true`, если сущность существует, иначе `false`.
    */
-  existsById(id: number): Promise<boolean>;
+  existsById(id: number | string): Promise<boolean>;
 }

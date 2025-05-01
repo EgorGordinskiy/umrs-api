@@ -11,7 +11,7 @@ import { SurveyResponse } from './survey-response/survey-response.entity';
 @Entity()
 export class Survey {
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @Column({ type: 'varchar', length: 255 })
   title: string;

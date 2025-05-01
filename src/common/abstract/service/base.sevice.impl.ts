@@ -20,7 +20,7 @@ export abstract class BaseServiceImpl<
     return this.repository.find({ cache: 60000 });
   }
 
-  public async findOne(id: number): Promise<T> {
+  public async findOne(id: number | string): Promise<T> {
     const entity = await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
       cache: 60000,
@@ -50,7 +50,7 @@ export abstract class BaseServiceImpl<
     return this.repository.save(entities);
   }
 
-  public async update(id: number, dto: UpdateDto): Promise<T> {
+  public async update(id: number | string, dto: UpdateDto): Promise<T> {
     const entity = await this.findOne(id);
 
     Object.assign(entity, dto);
@@ -58,13 +58,13 @@ export abstract class BaseServiceImpl<
     return this.repository.save(entity);
   }
 
-  public async remove(id: number): Promise<void> {
+  public async remove(id: number | string): Promise<void> {
     const entity = await this.findOne(id);
 
     await this.repository.remove(entity);
   }
 
-  public async existsById(id: number): Promise<boolean> {
+  public async existsById(id: number | string): Promise<boolean> {
     return this.repository.existsBy({ id } as FindOptionsWhere<T>);
   }
 
