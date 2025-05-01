@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import * as fs from 'node:fs';
 
 async function bootstrap() {
@@ -16,11 +16,13 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
 
+  const logger = new Logger();
   const config = new DocumentBuilder()
     .setTitle('UMRS API')
     .setVersion('1.0')
     .build();
 
+  logger.log('запущен в режиме ' + process.env.NODE_ENV);
   const documentFactory = () => SwaggerModule.createDocument(app, config);
 
   SwaggerModule.setup('api', app, documentFactory);
