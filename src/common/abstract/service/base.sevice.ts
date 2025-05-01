@@ -1,4 +1,7 @@
 import type { DeepPartial } from 'typeorm';
+// Импорт для JSDoc
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { NotFoundException } from '@nestjs/common';
 
 /**
  * Интерфейс, который гарантирует наличие поля `id` в сущности.
@@ -36,6 +39,16 @@ export interface BaseService<
    * @returns {Promise<T>} Созданная сущность.
    */
   create(createDto: CreateDto): Promise<T>;
+  /**
+   * Создать несколько новых сущностей.
+   * @param {CreateDto[]} createDto - DTO для создания сущностей.
+   * @param {(dto: CreateDto) => T} makeFunc - Функция, которая создает сущность из DTO.
+   * @returns {Promise<T[]>} Созданные сущности.
+   */
+  createMany(
+    createDto: CreateDto[],
+    makeFunc: (dto: CreateDto) => T | Promise<T>,
+  ): Promise<T[]>;
   /**
    * Обновить существующую сущность.
    * @param {number} id - Идентификатор сущности.

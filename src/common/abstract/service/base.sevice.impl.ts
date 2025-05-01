@@ -14,7 +14,7 @@ export abstract class BaseServiceImpl<
   UpdateDto extends DeepPartial<T>,
 > implements BaseService<T, CreateDto, UpdateDto>
 {
-  constructor(protected readonly repository: Repository<T>) {}
+  protected constructor(protected readonly repository: Repository<T>) {}
 
   public async findAll(): Promise<T[]> {
     return this.repository.find({ cache: 60000 });
@@ -39,6 +39,15 @@ export abstract class BaseServiceImpl<
     const entity = this.repository.create(dto);
 
     return await this.repository.save(entity);
+  }
+
+  public async createMany(
+    dto: CreateDto[],
+    makeFunc: (dto: CreateDto) => T | Promise<T>,
+  ): Promise<T[]> {
+    const entities = await Promise.all(dto.map((dto) => makeFunc(dto)));
+
+    return this.repository.save(entities);
   }
 
   public async update(id: number, dto: UpdateDto): Promise<T> {
