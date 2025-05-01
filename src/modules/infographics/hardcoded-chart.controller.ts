@@ -1,5 +1,5 @@
 import { Controller, Get, UseFilters, UseGuards } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '../auth/auth.guard';
 import { UnauthorizedExceptionFilter } from '../auth/unauthorized-exception.filter';
 
@@ -17,6 +17,7 @@ interface GraphData {
 export class HardcodedChartController {
   @Get()
   @UseFilters(UnauthorizedExceptionFilter)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Получить данные тестового графика' })
   public getHardcodedGraph(): Promise<GraphData> {
     return Promise.resolve({

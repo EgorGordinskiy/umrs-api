@@ -20,6 +20,11 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('UMRS API')
     .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      in: 'header',
+    })
     .build();
 
   logger.log('запущен в режиме ' + process.env.NODE_ENV);
