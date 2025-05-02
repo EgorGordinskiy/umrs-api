@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseServiceImpl } from '../../common/abstract';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { UpdateSurveyDto } from './dto/update-survey.dto';
 import { Survey } from './survey.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, type FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -17,6 +17,27 @@ export class SurveyService extends BaseServiceImpl<
     repository: Repository<Survey>,
   ) {
     super(repository);
+  }
+
+  public async findOne(
+    id: string,
+    withSchema = false,
+    withResponses = false,
+  ): Promise<Survey> {
+    const entity = await this.repository.findOne({
+      where: { id } as FindOptionsWhere<Survey>,
+      relations: {
+        schema: withSchema,
+        responses: withResponses,
+      },
+      cache: this.cache,
+    });
+
+    if (!entity) {
+      throw new NotFoundException(`Сущность Survey с ID ${id} не найдена.`);
+    }
+
+    return entity;
   }
 
   public create(dto: CreateSurveyDto): Promise<Survey> {
