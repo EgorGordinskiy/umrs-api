@@ -14,16 +14,17 @@ export abstract class BaseServiceImpl<
   UpdateDto extends DeepPartial<T>,
 > implements BaseService<T, CreateDto, UpdateDto>
 {
+  protected readonly cache = 60000;
   constructor(protected readonly repository: Repository<T>) {}
 
   public async findAll(): Promise<T[]> {
-    return this.repository.find({ cache: 60000 });
+    return this.repository.find({ cache: this.cache });
   }
 
   public async findOne(id: number | string): Promise<T> {
     const entity = await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
-      cache: 60000,
+      cache: this.cache,
     });
 
     if (!entity) {
