@@ -28,10 +28,10 @@ export abstract class BaseCrudController<
 
   @Get(':id')
   @ApiOperation({ summary: 'Получить запись по ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID записи' })
+  @ApiParam({ name: 'id', type: String, description: 'ID записи' })
   @ApiOkResponse({ description: 'Запись успешно получена.' })
   @ApiNotFoundResponse({ description: 'Запись не найдена.' })
-  public async findOne(@Param('id') id: number): Promise<EntityType> {
+  public async findOne(@Param('id') id: number | string): Promise<EntityType> {
     return await this.service.findOne(id);
   }
 
@@ -45,11 +45,11 @@ export abstract class BaseCrudController<
 
   @Put(':id')
   @ApiOperation({ summary: 'Обновить запись по ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID записи' })
+  @ApiParam({ name: 'id', type: String, description: 'ID записи' })
   @ApiOkResponse({ description: 'Запись успешно обновлена.' })
   @ApiNotFoundResponse({ description: 'Запись не найдена.' })
   public async update(
-    @Param('id') id: number,
+    @Param('id') id: number | string,
     @Body() dto: UpdateDto,
   ): Promise<EntityType> {
     return await this.service.update(id, dto);
@@ -57,10 +57,10 @@ export abstract class BaseCrudController<
 
   @Delete(':id')
   @ApiOperation({ summary: 'Удалить запись по ID' })
-  @ApiParam({ name: 'id', type: Number, description: 'ID записи' })
+  @ApiParam({ name: 'id', type: String, description: 'ID записи' })
   @ApiOkResponse({ description: 'Запись успешно удалена.' })
   @ApiNotFoundResponse({ description: 'Запись не найдена.' })
-  public async remove(@Param('id') id: number): Promise<void> {
+  public async remove(@Param('id') id: number | string): Promise<void> {
     return await this.service.remove(id);
   }
 }
