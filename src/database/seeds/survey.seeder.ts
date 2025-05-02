@@ -48,7 +48,7 @@ export default class SurveySeeder implements Seeder {
     };
 
     const getRandomInt = () => {
-      return faker.number.int({ min: 1, max: 100 });
+      return faker.number.int({ min: 50, max: 500 });
     };
 
     const responsesTypeOne = await createSurveyType(
