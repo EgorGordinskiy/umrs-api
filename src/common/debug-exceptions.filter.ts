@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
   UnauthorizedException,
+  Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
 
@@ -59,6 +60,8 @@ export class DebugExceptionsFilter implements ExceptionFilter {
       httpStatus,
     );
 
+    Logger.error(exception);
+
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);
   }
 
@@ -82,10 +85,17 @@ export class DebugExceptionsFilter implements ExceptionFilter {
 
     if (exception instanceof HttpException) {
       const exceptionResponse = exception.getResponse();
-      base.message =
-        typeof exceptionResponse === 'string'
-          ? exceptionResponse
-          : JSON.stringify(exceptionResponse);
+      if (
+        typeof exceptionResponse === 'object' &&
+        'message' in exceptionResponse &&
+        typeof exceptionResponse.message === 'string'
+      ) {
+        base.message = exceptionResponse.message;
+      } else if (typeof exceptionResponse === 'string') {
+        base.message = exceptionResponse;
+      } else {
+        base.message = JSON.stringify(exceptionResponse);
+      }
     } else if (exception instanceof Error) {
       base.message = exception.message;
       base.stack = exception.stack;
