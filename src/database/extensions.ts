@@ -27,16 +27,24 @@ export enum FilterRule {
   IS_NOT_NULL = 'isnotnull',
 }
 
+// немного костыльно с тех пор, как есть в typeorm свой SortDirection, но с таким
+// enum как-то удобнее
+export enum SortDirection {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
 /**
  * Возвращает объект, представляющий порядок сортировки на основе
  * предоставленного параметра Sorting. Если сортировка не указана,
  * возвращается пустой объект.
  *
  * @param sort - Объект сортировки, содержащий свойство и направление.
- * @returns Объект со свойством в качестве ключа и направлением в качестве значения, или пустой объект.
+ * @returns Объект со свойством в качестве ключа и направлением в качестве значения или пустой объект.
  */
-export const getOrder = (sort: Sorting) =>
-  sort ? { [sort.property]: sort.direction } : {};
+export const getOrder = (sort: Sorting) => {
+  return sort ? { [sort.property]: sort.direction } : {};
+};
 
 /**
  * Генерирует объект фильтрации для TypeORM из переданного списка свойств.

@@ -2,29 +2,85 @@ import {
   BadRequestException,
   createParamDecorator,
   ExecutionContext,
+  Logger,
 } from '@nestjs/common';
 import { Request } from 'express';
+import { SortDirection } from '../../../database/extensions';
 
+// сейчас может быть не особо понятно почему нельзя сразу возвращать
+// `{ [property: string]: SortDirection }` тип,
+// но теоретически при добавлении функциональности в SortingParams интерфейс станет полезнее
 export interface Sorting {
   property: string;
-  direction: string;
+  direction: SortDirection;
+}
+
+/**
+ * Аргументы для декоратора SortingParams.
+ */
+export interface SortingParamsOptions {
+  /** Имя параметра для сортировки */
+  key: string;
+  /** Допустимые значения для сортировки */
+  validParams?: string[];
+}
+
+/**
+ * Вспомогательная функция для получения всех строковых значений из объекта enum
+ * в виде группы для регулярного выражения.
+ */
+function getEnumRegexGroup<T extends object>(enumObj: T): string {
+  return Object.values(enumObj).join('|');
+}
+
+/**
+ * Type guard для SortDirection.
+ */
+function isSortDirection(value: string): value is SortDirection {
+  return Object.values(SortDirection).includes(value as SortDirection);
 }
 
 export const SortingParams = createParamDecorator(
-  (validParams: object, ctx: ExecutionContext): Sorting | null => {
+  (data: SortingParamsOptions, ctx: ExecutionContext): Sorting | undefined => {
+    // пока что пусть будет сортировка только по одному полю, т.е. ...?sort=createdAt:desc
+    // потом может надо будет сделать поддержку `...?sort=createdAt:desc,id:asc,...`
+    // по вложенным свойствам объектов сортировать тоже нельзя
     const req: Request = ctx.switchToHttp().getRequest();
-    const sort = req.query.sort as string;
-    if (!sort) return null;
 
-    const sortPattern = /^([a-zA-Z0-9]+):(asc|desc)$/;
-    if (!sort.match(sortPattern))
-      throw new BadRequestException('Неверный формат сортировки');
+    if (!req.query[data.key]) {
+      Logger.warn(`Параметр с именем ${data.key} не найден`);
+      return undefined;
+    }
+    const sort = req.query[data.key] as string;
+    if (!sort) {
+      return undefined;
+    }
 
-    const [property, direction] = sort.split(':');
-    if (!(property in validParams))
+    // создать regex на основе всех enum значений SortDirection
+    const directionGroup = getEnumRegexGroup(SortDirection);
+    const sortPattern = new RegExp(`^([a-zA-Z0-9_-]+):(${directionGroup})$`);
+
+    const match = sort.match(sortPattern);
+    if (!match) throw new BadRequestException('Неверный формат сортировки');
+
+    const property = match[1];
+    const direction = match[2];
+
+    if (
+      data.validParams &&
+      Array.isArray(data.validParams) &&
+      !data.validParams.includes(property)
+    ) {
       throw new BadRequestException(
-        `Неверное свойство для сортировки: ${property}`,
+        `Недопустимое свойство для сортировки: ${property}`,
       );
+    }
+
+    if (!isSortDirection(direction)) {
+      throw new BadRequestException(
+        `Недопустимое направление сортировки: ${direction}`,
+      );
+    }
 
     return { property, direction };
   },
