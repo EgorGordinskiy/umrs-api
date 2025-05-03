@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
 import { seedDatabase } from '../../database/functions/seedDatabase';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import clearDatabase from '../../database/functions/clearDatabase';
@@ -12,12 +12,15 @@ import { DataSource } from 'typeorm';
 @ApiTags('Для разработки')
 @Controller('dev')
 export class DevController {
+  private readonly logger = new Logger(DevController.name);
+
   constructor(private readonly dataSource: DataSource) {}
 
   @Get('seed')
   @ApiOperation({ summary: 'Сгенерировать тестовые данные.' })
   public async seed() {
     await seedDatabase(true, this.dataSource);
+    this.logger.log('Seeding finished');
   }
 
   @Get('reseed')
@@ -27,5 +30,6 @@ export class DevController {
   public async reseed() {
     await clearDatabase(this.dataSource);
     await seedDatabase(true, this.dataSource);
+    this.logger.log('Reseeding finished');
   }
 }
