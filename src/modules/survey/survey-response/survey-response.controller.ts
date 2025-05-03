@@ -23,17 +23,4 @@ export class SurveyResponseController extends BaseCrudController<
   constructor(protected readonly service: SurveyResponseService) {
     super(service);
   }
-
-  @Get('/by-survey/:surveyId')
-  @ApiOperation({
-    summary: 'Получить ответы анкеты по ID анкеты.',
-  })
-  @ApiParam({ name: 'surveyId', type: String, description: 'ID анкеты' })
-  @ApiOkResponse({ description: 'Ответы анкеты успешно получены.' })
-  @ApiNotFoundResponse({ description: 'Ответы анкеты не найдены.' })
-  public async findBySurveyId(
-    @Param('surveyId') surveyId: string,
-  ): Promise<SurveyResponse[]> {
-    return await this.service.findBySurveyId(surveyId);
-  }
 }

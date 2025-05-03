@@ -5,6 +5,8 @@ import { UpdateSurveyDto } from './dto/update-survey.dto';
 import { Survey } from './survey.entity';
 import { DeleteResult, type FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { SurveyResponse } from './survey-response/survey-response.entity';
+import { SurveyResponseService } from './survey-response/survey-response.service';
 
 @Injectable()
 export class SurveyService extends BaseServiceImpl<
@@ -15,6 +17,7 @@ export class SurveyService extends BaseServiceImpl<
   constructor(
     @InjectRepository(Survey)
     repository: Repository<Survey>,
+    private readonly surveyResponseService: SurveyResponseService,
   ) {
     super(repository);
   }
@@ -40,6 +43,12 @@ export class SurveyService extends BaseServiceImpl<
     return entity;
   }
 
+  public async getResponsesBySurveyId(
+    surveyId: string,
+  ): Promise<SurveyResponse[]> {
+    return await this.surveyResponseService.findAllBySurveyId(surveyId);
+  }
+
   public create(dto: CreateSurveyDto): Promise<Survey> {
     return this.repository.save(this.make(dto));
   }
@@ -57,7 +66,7 @@ export class SurveyService extends BaseServiceImpl<
   }
 
   public async delete(id: string): Promise<DeleteResult> {
-    // todo нужно ли создавать триггер на удаление анкеты или очистке её версий, чтобы не оставлять "висящих в воздухе" схем или их версий без привязанных анкет
+    // todo создать триггер на удаление анкеты или очистке её версий, чтобы не оставлять "висящих в воздухе" схем или их версий без привязанных анкет
     return await this.repository.delete(id);
   }
 }

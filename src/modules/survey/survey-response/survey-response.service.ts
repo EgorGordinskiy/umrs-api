@@ -19,9 +19,9 @@ export class SurveyResponseService extends BaseServiceImpl<
     super(repository);
   }
 
-  findBySurveyId(surveyId: string): Promise<SurveyResponse[]> {
+  findAllBySurveyId(surveyId: string): Promise<SurveyResponse[]> {
+    // todo добавить фильтрацию, сортировку, pagination
     return this.repository.find({
-      relations: { survey: true },
       where: { survey: { id: surveyId } },
     });
   }

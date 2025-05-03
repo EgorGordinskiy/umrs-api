@@ -11,6 +11,7 @@ import {
   ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { SurveyResponse } from './survey-response/survey-response.entity';
 
 @ApiTags('Анкеты')
 @Controller('survey')
@@ -38,4 +39,19 @@ export class SurveyController extends BaseCrudController<
   ): Promise<Survey> {
     return await this.service.findOne(id, withSchema, withResponses);
   }
+
+  @Get(':id/responses')
+  @ApiOperation({
+    summary: 'Получить ответы анкеты по ID анкеты.',
+  })
+  @ApiParam({ name: 'surveyId', type: String, description: 'ID анкеты' })
+  @ApiOkResponse({ description: 'Ответы анкеты успешно получены.' })
+  @ApiNotFoundResponse({ description: 'Ответы анкеты не найдены.' })
+  public async findResponsesBySurveyId(
+    @Param('surveyId') surveyId: string,
+  ): Promise<SurveyResponse[]> {
+    // todo pagination
+    return await this.service.getResponsesBySurveyId(surveyId);
+  }
+
 }
