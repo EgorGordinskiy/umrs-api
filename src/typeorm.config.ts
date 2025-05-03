@@ -1,5 +1,6 @@
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
+import { DEVELOPMENT } from './common/constants';
 
 config();
 
@@ -12,11 +13,11 @@ export const dataSourceOptions: DataSourceOptions = {
   database: process.env.DB_NAME,
   entities: ['src/**/*.entity.ts'],
   migrations: ['src/migrations/*.ts'],
-  synchronize: process.env.NODE_ENV === 'development',
+  synchronize: process.env.NODE_ENV === DEVELOPMENT,
 
   // логирование
   logging: ['error'],
-  maxQueryExecutionTime: 5000, // логировать запросы, выполняющие более 5 с
+  maxQueryExecutionTime: 5000, // логировать запросы, выполняющиеся более 5 с
 };
 
 const AppDataSource = new DataSource(dataSourceOptions);
