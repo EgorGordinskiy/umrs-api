@@ -2,6 +2,7 @@ import {
   BadRequestException,
   createParamDecorator,
   ExecutionContext,
+  Logger,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { FilterRule } from '../../../database/extensions';
@@ -20,43 +21,100 @@ export interface Filtering {
 }
 
 /**
+ * Опции для декоратора FilteringParams.
+ * @property key - имя query-параметра, в котором ожидается фильтр (например, `filter`)
+ * @property allowedFields - список разрешённых свойств для фильтрации
+ */
+export interface FilteringParamsOptions {
+  key: string;
+  allowedFields?: string[];
+}
+
+/**
+ * Type guard для FilterRule.
+ */
+function isFilterRule(value: string): value is FilterRule {
+  return Object.values(FilterRule).includes(value as FilterRule);
+}
+
+/**
  * Декоратор для извлечения и проверки параметров фильтрации в GET запросе.
+ * Использует динамически построенный regex на основе FilterRule enum.
  *
- * @param allowedFields - Массив с разрешенными свойствами для фильтрации.
+ * @param options - FilteringParamsOptions с ключом и разрешёнными полями.
  * @returns Объект фильтрации или null, если фильтр не предоставлен.
  */
 export const FilteringParams = createParamDecorator(
-  (allowedFields: string[] = [], ctx: ExecutionContext): Filtering | null => {
+  (
+    options: FilteringParamsOptions = { key: 'filter' },
+    ctx: ExecutionContext,
+  ): Filtering | undefined => {
     const req: Request = ctx.switchToHttp().getRequest();
-    const filter = req.query.filter as string;
-    if (!filter) return null;
+    // опять же тоже только один фильтр поддерживается на данный момент
 
-    if (
-      // todo вытащить в regex конструктор и привязать к enum и прочему
-      !filter.match(
-        /^[a-zA-Z0-9_]+:(eq|neq|gt|gte|lt|lte|like|nlike|in|nin):[a-zA-Z0-9_,-]+$/,
-      ) &&
-      !filter.match(/^[a-zA-Z0-9_]+:(isnull|isnotnull)$/)
-    ) {
-      throw new BadRequestException('Неверный формат фильтра');
+    if (!req.query[options.key]) {
+      Logger.warn(`Параметр с именем ${options.key} не найден`);
+      return undefined;
+    }
+    const filter = req.query[options.key] as string;
+    if (!filter) return undefined;
+
+    // Regex группы правил для regex из FilterRule enum
+    const filterRules = Object.values(FilterRule);
+
+    const ruleGroupsRequiringValue = filterRules
+      .filter(
+        (rule) =>
+          rule !== FilterRule.IS_NULL && rule !== FilterRule.IS_NOT_NULL,
+      )
+      .join('|');
+
+    const ruleGroupsNotRequiringValue = [
+      FilterRule.IS_NULL,
+      FilterRule.IS_NOT_NULL,
+    ].join('|');
+
+    let property: string;
+    let rule: string;
+    let value: string | undefined;
+
+    // Проверка если это будет фильтр, требующий value
+    const patternWithValue = new RegExp(
+      `^([a-zA-Z0-9_-]+):(${ruleGroupsRequiringValue}):(.+)$`,
+    );
+    let match = filter.match(patternWithValue);
+    if (match) {
+      property = match[1];
+      rule = match[2];
+      value = match[3];
+    } else {
+      // Проверка если это будет фильтр, не требующий value (например, isnull/isnotnull)
+      const patternWithoutValue = new RegExp(
+        `^([a-zA-Z0-9_-]+):(${ruleGroupsNotRequiringValue})$`,
+      );
+      match = filter.match(patternWithoutValue);
+      if (match) {
+        property = match[1];
+        rule = match[2];
+        value = undefined;
+      } else {
+        throw new BadRequestException('Неверный формат фильтра');
+      }
     }
 
-    const parts = filter.split(':');
-    const property = parts[0];
-    const rule = parts[1] as FilterRule;
-    const value = parts.length > 2 ? parts.slice(2).join(':') : undefined;
-
+    // Проверка разрешённых полей для фильтрации
     if (
-      Array.isArray(allowedFields) &&
-      allowedFields.length > 0 &&
-      !allowedFields.includes(property)
+      Array.isArray(options.allowedFields) &&
+      options.allowedFields.length > 0 &&
+      !options.allowedFields.includes(property)
     ) {
       throw new BadRequestException(
         `Неверное свойство для фильтрации: ${property}`,
       );
     }
 
-    if (!Object.values(FilterRule).includes(rule)) {
+    // Проверка валидности правила фильтрации
+    if (!isFilterRule(rule)) {
       throw new BadRequestException(`Неверное правило фильтрации: ${rule}`);
     }
 

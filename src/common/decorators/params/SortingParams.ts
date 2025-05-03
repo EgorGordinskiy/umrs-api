@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { SortDirection } from '../../../database/extensions';
+import { getEnumRegexGroup } from '../../utilFunctions';
 
 // сейчас может быть не особо понятно почему нельзя сразу возвращать
 // `{ [property: string]: SortDirection }` тип,
@@ -23,14 +24,6 @@ export interface SortingParamsOptions {
   key: string;
   /** Допустимые значения для сортировки */
   validParams?: string[];
-}
-
-/**
- * Вспомогательная функция для получения всех строковых значений из объекта enum
- * в виде группы для регулярного выражения.
- */
-function getEnumRegexGroup<T extends object>(enumObj: T): string {
-  return Object.values(enumObj).join('|');
 }
 
 /**
