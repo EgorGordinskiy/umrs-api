@@ -104,11 +104,8 @@ describe('SurveyService', () => {
       const deleteResult = { affected: 1 };
 
       jest.spyOn(mockRepository, 'delete').mockResolvedValue(deleteResult);
-
-      const result = await service.delete(surveyId);
-
+      await service.remove(surveyId);
       expect(mockRepository.delete).toHaveBeenCalledWith(surveyId);
-      expect(result).toEqual(deleteResult);
     });
   });
 });

@@ -3,7 +3,7 @@ import { BaseServiceImpl } from '../../common/abstract';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { UpdateSurveyDto } from './dto/update-survey.dto';
 import { Survey } from './survey.entity';
-import { DeleteResult, type FindOptionsWhere, Repository } from 'typeorm';
+import { type FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveyResponseService } from './survey-response/survey-response.service';
@@ -78,8 +78,5 @@ export class SurveyService extends BaseServiceImpl<
     });
   }
 
-  public async delete(id: string): Promise<DeleteResult> {
-    // todo создать триггер на удаление анкеты или очистке её версий, чтобы не оставлять "висящих в воздухе" схем или их версий без привязанных анкет
-    return await this.repository.delete(id);
-  }
+  // todo создать триггер на удаление анкеты или очистке её версий, чтобы не оставлять "висящих в воздухе" схем или их версий без привязанных анкет
 }
