@@ -12,6 +12,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { SurveyResponse } from './survey-response/survey-response.entity';
+import { SurveySchema } from './survey-schema/survey-schema.entity';
 
 @ApiTags('Анкеты')
 @Controller('survey')
@@ -59,11 +60,11 @@ export class SurveyController extends BaseCrudController<
     summary: 'Получить схему анкеты по ID анкеты.',
   })
   @ApiParam({ name: 'surveyId', type: String, description: 'ID анкеты' })
-  @ApiOkResponse({ description: 'Ответы анкеты успешно получены.' })
-  @ApiNotFoundResponse({ description: 'Ответы анкеты не найдены.' })
-  public findSchemaBySurveyId(
+  @ApiOkResponse({ description: 'Схема анкеты успешно получена.' })
+  @ApiNotFoundResponse({ description: 'Схема анкеты не найдена.' })
+  public async findSchemaBySurveyId(
     @Param('surveyId') surveyId: string,
-  ): SurveyResponse[] {
-    throw new Error('Method not implemented.');
+  ): Promise<SurveySchema> {
+    return await this.service.getSchemaBySurveyId(surveyId);
   }
 }

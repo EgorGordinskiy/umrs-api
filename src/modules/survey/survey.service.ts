@@ -7,6 +7,7 @@ import { DeleteResult, type FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveyResponseService } from './survey-response/survey-response.service';
+import { SurveySchema } from './survey-schema/survey-schema.entity';
 
 @Injectable()
 export class SurveyService extends BaseServiceImpl<
@@ -41,6 +42,18 @@ export class SurveyService extends BaseServiceImpl<
     }
 
     return entity;
+  }
+
+  public async getSchemaBySurveyId(surveyId: string): Promise<SurveySchema> {
+    const survey = await this.findOne(surveyId, true, false);
+
+    if (!survey.schema) {
+      throw new NotFoundException(
+        `У анкеты с ID ${surveyId} не найдена связанная схема.`,
+      );
+    }
+
+    return survey.schema;
   }
 
   public async getResponsesBySurveyId(
