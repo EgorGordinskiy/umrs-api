@@ -91,7 +91,7 @@ export abstract class BaseServiceImpl<
     return this.repository.existsBy({ id } as FindOptionsWhere<T>);
   }
 
-  private get name() {
+  protected get name() {
     return this.repository.metadata.name;
   }
 }
