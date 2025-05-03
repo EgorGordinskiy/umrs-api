@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import seedDatabase from '../../database/runSeeders';
+import { seedDatabase } from '../../database/functions/seedDatabase';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import clearDatabase from '../../database/clearDatabase';
+import clearDatabase from '../../database/functions/clearDatabase';
 import { DataSource } from 'typeorm';
 
 /**

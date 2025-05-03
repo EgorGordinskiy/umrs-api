@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { runSeeders } from 'typeorm-extension';
-import { dataSourceOptions } from '../typeorm.config';
-import { Survey } from '../modules/survey/survey.entity';
-import { SurveyResponse } from '../modules/survey/survey-response/survey-response.entity';
+import { dataSourceOptions } from '../../typeorm.config';
+import { Survey } from '../../modules/survey/survey.entity';
+import { SurveyResponse } from '../../modules/survey/survey-response/survey-response.entity';
 import { Logger } from '@nestjs/common';
-import { DEVELOPMENT } from '../common/constants';
+import { DEVELOPMENT } from '../../common/constants';
 
-export default async function seedDatabase(
+export async function seedDatabase(
   force = false,
   dataSource = new DataSource(dataSourceOptions),
 ) {
@@ -44,7 +44,3 @@ export default async function seedDatabase(
 
   Logger.log('Data was seeded with test data!');
 }
-
-seedDatabase().catch((err) => {
-  Logger.error('Error during seeding:', err);
-});
