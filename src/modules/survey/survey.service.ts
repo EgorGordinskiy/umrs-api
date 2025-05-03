@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveyResponseService } from './survey-response/survey-response.service';
 import { SurveySchema } from './survey-schema/survey-schema.entity';
+import { Sorting } from '../../common/decorators/params/SortingParams';
+import { getOrder } from '../../database/extensions';
 
 @Injectable()
 export class SurveyService extends BaseServiceImpl<
@@ -21,6 +23,15 @@ export class SurveyService extends BaseServiceImpl<
     private readonly surveyResponseService: SurveyResponseService,
   ) {
     super(repository);
+  }
+
+  public async findAllSorted(sorting?: Sorting): Promise<Survey[]> {
+    if (!sorting) return super.findAll();
+
+    console.log('service: ', getOrder(sorting));
+    return await this.repository.find({
+      order: getOrder(sorting),
+    });
   }
 
   public async findOne(
