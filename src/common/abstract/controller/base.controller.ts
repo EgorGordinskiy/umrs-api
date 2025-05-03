@@ -11,6 +11,10 @@ import {
 import { BaseService, EntityWithId } from '../service';
 import { DeepPartial } from 'typeorm';
 import { Sorting, SortingParams } from '../../decorators/params/SortingParams';
+import {
+  Filtering,
+  FilteringParams,
+} from '../../decorators/params/FilteringParms';
 
 export abstract class BaseCrudController<
   EntityType extends EntityWithId,
@@ -30,6 +34,10 @@ export abstract class BaseCrudController<
     type: 'string',
     description: 'Способ сортировки',
     examples: {
+      empty: {
+        value: undefined,
+        summary: 'Без сортировки',
+      },
       decs: {
         value: 'title:desc',
         summary: 'Сортировка по убыванию',
@@ -40,10 +48,27 @@ export abstract class BaseCrudController<
       },
     },
   })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    type: 'string',
+    description: 'Способ фильтрации',
+    examples: {
+      empty: {
+        value: undefined,
+        summary: 'Без фильтрации',
+      },
+      default: {
+        value: 'title:eq:A',
+        summary: 'Фильтр по значению',
+      },
+    },
+  })
   public async findAll(
     @SortingParams() sorting?: Sorting,
+    @FilteringParams() filter?: Filtering,
   ): Promise<EntityType[]> {
-    return await this.service.findAll(sorting);
+    return await this.service.findAll(sorting, filter);
   }
 
   @Get(':id')

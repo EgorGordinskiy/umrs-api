@@ -8,7 +8,8 @@ import {
   Repository,
 } from 'typeorm';
 import { Sorting } from '../../decorators/params/SortingParams';
-import { getOrder } from '../../../database/extensions';
+import { getOrder, getWhere } from '../../../database/extensions';
+import { Filtering } from '../../decorators/params/FilteringParms';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
@@ -25,10 +26,10 @@ export abstract class BaseServiceImpl<
   protected readonly cache = 60000;
   constructor(protected readonly repository: Repository<T>) {}
 
-  public async findAll(sorting?: Sorting): Promise<T[]> {
-    if (!sorting) return this.repository.find({ cache: this.cache });
+  public async findAll(sorting?: Sorting, filter?: Filtering): Promise<T[]> {
     return this.repository.find({
-      order: getOrder(sorting) as FindOptionsOrder<T>,
+      order: sorting ? (getOrder(sorting) as FindOptionsOrder<T>) : undefined,
+      where: filter ? getWhere(filter) : undefined,
       cache: this.cache,
     });
   }
