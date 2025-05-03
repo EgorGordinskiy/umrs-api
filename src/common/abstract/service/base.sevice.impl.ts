@@ -2,10 +2,13 @@ import { NotFoundException } from '@nestjs/common';
 import { BaseService, EntityWithId } from './base.sevice';
 import {
   type DeepPartial,
+  FindOptionsOrder,
   type FindOptionsWhere,
   In,
   Repository,
 } from 'typeorm';
+import { Sorting } from '../../decorators/params/SortingParams';
+import { getOrder } from '../../../database/extensions';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
@@ -22,8 +25,12 @@ export abstract class BaseServiceImpl<
   protected readonly cache = 60000;
   constructor(protected readonly repository: Repository<T>) {}
 
-  public async findAll(): Promise<T[]> {
-    return this.repository.find({ cache: this.cache });
+  public async findAll(sorting?: Sorting): Promise<T[]> {
+    if (!sorting) return this.repository.find({ cache: this.cache });
+    return this.repository.find({
+      order: getOrder(sorting) as FindOptionsOrder<T>,
+      cache: this.cache,
+    });
   }
 
   public async findOne(id: number | string): Promise<T> {

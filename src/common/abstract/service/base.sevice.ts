@@ -2,6 +2,7 @@ import type { DeepPartial } from 'typeorm';
 // Импорт для JSDoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundException } from '@nestjs/common';
+import { Sorting } from '../../decorators/params/SortingParams';
 
 /**
  * Интерфейс, который гарантирует наличие поля `id` в сущности.
@@ -23,9 +24,10 @@ export interface BaseService<
 > {
   /**
    * Получить все сущности.
+   * @param {Sorting} sorting - Способ сортировки.
    * @returns {Promise<T[]>} Список всех сущностей.
    */
-  findAll(): Promise<T[]>;
+  findAll(sorting?: Sorting): Promise<T[]>;
   /**
    * Найти сущность по ID.
    * @param {number} id - Идентификатор сущности.

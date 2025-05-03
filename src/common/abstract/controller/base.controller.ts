@@ -6,9 +6,11 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { BaseService, EntityWithId } from '../service';
 import { DeepPartial } from 'typeorm';
+import { Sorting, SortingParams } from '../../decorators/params/SortingParams';
 
 export abstract class BaseCrudController<
   EntityType extends EntityWithId,
@@ -22,8 +24,26 @@ export abstract class BaseCrudController<
   @Get()
   @ApiOperation({ summary: 'Получить все записи' })
   @ApiOkResponse({ description: 'Записи успешно получены.' })
-  public async findAll(): Promise<EntityType[]> {
-    return await this.service.findAll();
+  @ApiQuery({
+    name: 'sorting',
+    required: false,
+    type: 'string',
+    description: 'Способ сортировки',
+    examples: {
+      decs: {
+        value: 'title:desc',
+        summary: 'Сортировка по убыванию',
+      },
+      asc: {
+        value: 'title:asc',
+        summary: 'Сортировка по возрастанию',
+      },
+    },
+  })
+  public async findAll(
+    @SortingParams({ key: 'sorting' }) sorting?: Sorting,
+  ): Promise<EntityType[]> {
+    return await this.service.findAll(sorting);
   }
 
   @Get(':id')
