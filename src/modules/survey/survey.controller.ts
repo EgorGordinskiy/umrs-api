@@ -54,4 +54,16 @@ export class SurveyController extends BaseCrudController<
     return await this.service.getResponsesBySurveyId(surveyId);
   }
 
+  @Get(':id/schema')
+  @ApiOperation({
+    summary: 'Получить схему анкеты по ID анкеты.',
+  })
+  @ApiParam({ name: 'surveyId', type: String, description: 'ID анкеты' })
+  @ApiOkResponse({ description: 'Ответы анкеты успешно получены.' })
+  @ApiNotFoundResponse({ description: 'Ответы анкеты не найдены.' })
+  public findSchemaBySurveyId(
+    @Param('surveyId') surveyId: string,
+  ): SurveyResponse[] {
+    throw new Error('Method not implemented.');
+  }
 }
