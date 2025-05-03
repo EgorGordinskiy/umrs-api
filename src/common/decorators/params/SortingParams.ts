@@ -34,17 +34,20 @@ function isSortDirection(value: string): value is SortDirection {
 }
 
 export const SortingParams = createParamDecorator(
-  (data: SortingParamsOptions, ctx: ExecutionContext): Sorting | undefined => {
+  (
+    options: SortingParamsOptions = { key: 'sorting' },
+    ctx: ExecutionContext,
+  ) => {
     // пока что пусть будет сортировка только по одному полю, т.е. ...?sort=createdAt:desc
     // потом может надо будет сделать поддержку `...?sort=createdAt:desc,id:asc,...`
     // по вложенным свойствам объектов сортировать тоже нельзя
     const req: Request = ctx.switchToHttp().getRequest();
 
-    if (!req.query[data.key]) {
-      Logger.warn(`Параметр с именем ${data.key} не найден`);
+    if (!req.query[options.key]) {
+      Logger.warn(`Параметр с именем ${options.key} не найден`);
       return undefined;
     }
-    const sort = req.query[data.key] as string;
+    const sort = req.query[options.key] as string;
     if (!sort) {
       return undefined;
     }
@@ -60,9 +63,9 @@ export const SortingParams = createParamDecorator(
     const direction = match[2];
 
     if (
-      data.validParams &&
-      Array.isArray(data.validParams) &&
-      !data.validParams.includes(property)
+      options.validParams &&
+      Array.isArray(options.validParams) &&
+      !options.validParams.includes(property)
     ) {
       throw new BadRequestException(
         `Недопустимое свойство для сортировки: ${property}`,

@@ -41,7 +41,7 @@ export abstract class BaseCrudController<
     },
   })
   public async findAll(
-    @SortingParams({ key: 'sorting' }) sorting?: Sorting,
+    @SortingParams() sorting?: Sorting,
   ): Promise<EntityType[]> {
     return await this.service.findAll(sorting);
   }
