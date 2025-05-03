@@ -8,8 +8,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveyResponseService } from './survey-response/survey-response.service';
 import { SurveySchema } from './survey-schema/survey-schema.entity';
-import { Sorting } from '../../common/decorators/params/SortingParams';
-import { getOrder } from '../../database/extensions';
 
 @Injectable()
 export class SurveyService extends BaseServiceImpl<
@@ -23,15 +21,6 @@ export class SurveyService extends BaseServiceImpl<
     private readonly surveyResponseService: SurveyResponseService,
   ) {
     super(repository);
-  }
-
-  public async findAllSorted(sorting?: Sorting): Promise<Survey[]> {
-    if (!sorting) return super.findAll();
-
-    console.log('service: ', getOrder(sorting));
-    return await this.repository.find({
-      order: getOrder(sorting),
-    });
   }
 
   public async findOne(
@@ -88,6 +77,4 @@ export class SurveyService extends BaseServiceImpl<
       isActive: dto.isActive ?? true,
     });
   }
-
-  // todo создать триггер на удаление анкеты или очистке её версий, чтобы не оставлять "висящих в воздухе" схем или их версий без привязанных анкет
 }

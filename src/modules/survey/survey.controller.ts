@@ -9,15 +9,10 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveySchema } from './survey-schema/survey-schema.entity';
-import {
-  Sorting,
-  SortingParams,
-} from '../../common/decorators/params/SortingParams';
 
 @ApiTags('Анкеты')
 @Controller('survey')
@@ -28,28 +23,6 @@ export class SurveyController extends BaseCrudController<
 > {
   constructor(protected readonly service: SurveyService) {
     super(service);
-  }
-
-  @Get('sorted-test')
-  @ApiOperation({ summary: 'Получить все анкеты' })
-  @ApiQuery({
-    name: 'sorting',
-    required: false,
-    type: 'string',
-    description: 'Способ сортировки',
-    examples: {
-      default: {
-        value: 'title:desc',
-      },
-    },
-  })
-  @ApiOkResponse({ description: 'Анкеты успешно получены.' })
-  public async findAllSorted(
-    @SortingParams({ key: 'sorting' }) sorting?: Sorting,
-  ): Promise<Survey[]> {
-    // todo вытащить это в базовый контроллер
-    console.log('controller: ', sorting);
-    return await this.service.findAllSorted(sorting);
   }
 
   @Get(':id')
