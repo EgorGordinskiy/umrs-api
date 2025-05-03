@@ -3,28 +3,37 @@ import { runSeeders } from 'typeorm-extension';
 import { dataSourceOptions } from '../typeorm.config';
 import { Survey } from '../modules/survey/survey.entity';
 import { SurveyResponse } from '../modules/survey/survey-response/survey-response.entity';
-
-const greenConsoleLog = (text: string) => console.log(`\x1b[32m${text}\x1b[0m`);
-const redConsoleLog = (text: string) => console.log(`\x1b[31m${text}\x1b[0m`);
+import { Logger } from '@nestjs/common';
+import { DEVELOPMENT } from '../common/constants';
 
 export default async function seedDatabase(
+  force = false,
   dataSource = new DataSource(dataSourceOptions),
 ) {
-  await dataSource.initialize();
+  if (process.env.NODE_ENV !== DEVELOPMENT) {
+    throw new Error('Генерация тестовых данных только для среды разработки');
+  }
+
+  if (!dataSource.isInitialized) {
+    Logger.log('Initializing database...');
+    await dataSource.initialize();
+  }
 
   // region Не генерировать новые данные при каждом перезапуске контейнера разработки
-  const surveyCount = await dataSource.getRepository(Survey).count();
-  const surveyResponseCount = await dataSource
-    .getRepository(SurveyResponse)
-    .count();
+  if (!force) {
+    const surveyCount = await dataSource.getRepository(Survey).count();
+    const surveyResponseCount = await dataSource
+      .getRepository(SurveyResponse)
+      .count();
 
-  if (surveyCount > 0 || surveyResponseCount > 0) {
-    redConsoleLog(
-      "Data already exists in the database. New data won't be seeded. " +
-        'Please restart the database service if you need to reseed.',
-    );
-    await dataSource.destroy();
-    return;
+    if (surveyCount > 0 || surveyResponseCount > 0) {
+      Logger.error(
+        "Data already exists in the database. New data won't be seeded. " +
+          'Please restart the database service if you need to reseed.',
+      );
+      await dataSource.destroy();
+      return;
+    }
   }
   // endregion
 
@@ -33,10 +42,9 @@ export default async function seedDatabase(
     factories: ['src/database/factories/**/*{.ts,.js}'],
   });
 
-  greenConsoleLog('Data was seeded with test data!');
-  await dataSource.destroy();
+  Logger.log('Data was seeded with test data!');
 }
 
 seedDatabase().catch((err) => {
-  console.error('Error during seeding:', err);
+  Logger.error('Error during seeding:', err);
 });
