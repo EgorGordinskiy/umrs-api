@@ -1,6 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
-import type { BaseService, EntityWithId } from './base.sevice';
-import { type DeepPartial, type FindOptionsWhere, Repository } from 'typeorm';
+import { BaseService, EntityWithId } from './base.sevice';
+import {
+  type DeepPartial,
+  type FindOptionsWhere,
+  In,
+  Repository,
+} from 'typeorm';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
@@ -63,6 +68,23 @@ export abstract class BaseServiceImpl<
     const entity = await this.findOne(id);
 
     await this.repository.remove(entity);
+  }
+
+  public async removeMany(ids: number[] | string[]) {
+    if (!ids.length) return;
+    let entities: T[];
+
+    if (typeof ids[0] === 'number') {
+      entities = await this.repository.findBy({
+        id: In(ids as number[]),
+      } as FindOptionsWhere<T>);
+    } else {
+      entities = await this.repository.findBy({
+        id: In(ids as string[]),
+      } as FindOptionsWhere<T>);
+    }
+
+    await this.repository.remove(entities);
   }
 
   public async existsById(id: number | string): Promise<boolean> {

@@ -63,6 +63,12 @@ export interface BaseService<
    */
   remove(id: number | string): Promise<void>;
   /**
+   * Удалить сущности по массиву идентификаторов.
+   * @param ids - Массив идентификаторов сущностей.
+   * @returns {Promise<void>}
+   */
+  removeMany(ids: number[] | string[]): Promise<void>;
+  /**
    * Проверяет, существует ли сущность c заданным id.
    * @param {DeepPartial<T>} id - ID.
    * @returns {Promise<boolean>} `true`, если сущность существует, иначе `false`.
