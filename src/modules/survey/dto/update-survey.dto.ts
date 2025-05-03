@@ -6,5 +6,5 @@ export class UpdateSurveyDto {
   readonly title?: string;
   readonly description?: string;
   readonly isActive?: boolean;
-  readonly schemaId?: number;
+  readonly schemaId?: string;
 }

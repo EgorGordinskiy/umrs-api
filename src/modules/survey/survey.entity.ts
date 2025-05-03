@@ -25,6 +25,9 @@ export class Survey {
   @ManyToOne(() => SurveySchema, (schema) => schema.surveys)
   schema: SurveySchema;
 
+  @Column({ type: 'uuid' })
+  schemaId: string;
+
   @OneToMany(() => SurveyResponse, (response) => response.survey)
   responses: SurveyResponse[];
 }

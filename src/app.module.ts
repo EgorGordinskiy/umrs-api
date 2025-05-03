@@ -20,6 +20,7 @@ const imports = [
     database: process.env.DB_NAME,
     autoLoadEntities: true,
     synchronize: process.env.NODE_ENV === DEVELOPMENT,
+    subscribers: [SurveySubscriber], // через glob строку по файловому пути почему-то не работает
   }),
   GisModule,
   SurveyModule,
