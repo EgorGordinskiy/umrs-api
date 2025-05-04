@@ -7,6 +7,10 @@ export default setSeederFactory(Survey, (faker) => {
   survey.title = faker.word.noun();
   survey.description = faker.lorem.sentence();
   survey.isActive = getRandomBoolean();
+  survey.createdAt = faker.date.past();
+  if (getRandomBoolean()) {
+    survey.updatedAt = faker.date.past({ refDate: survey.createdAt });
+  }
 
   return survey;
 });
