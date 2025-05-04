@@ -8,6 +8,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveyResponseService } from './survey-response/survey-response.service';
 import { SurveySchema } from './survey-schema/survey-schema.entity';
+import { Filtering } from '../../common/features/filtering';
+import { Sorting } from '../../common/features/sorting';
 
 @Injectable()
 export class SurveyService extends BaseServiceImpl<
@@ -58,8 +60,23 @@ export class SurveyService extends BaseServiceImpl<
 
   public async getResponsesBySurveyId(
     surveyId: string,
+    filtering?: Filtering,
+    sorting?: Sorting,
+    // responsesDataFilter?: Filtering,
+    // responsesDataSorting?: Sorting,
   ): Promise<SurveyResponse[]> {
-    return await this.surveyResponseService.findAllBySurveyId(surveyId);
+    // todo offset paginated версию добавить
+    const surveyResponses = await this.surveyResponseService.findAllBySurveyId(
+      surveyId,
+      filtering,
+      sorting,
+    );
+
+    // todo пока втупую берем всё и после этого тут фильтруем и сортируем
+    // todo поскольку для json тут надо учитывать потенциально сильно больше данных
+    // todo и n глубину ключа в response.data, то тут, пожалуй, лучше post запрос
+    // todo и немного больше логики, которая начиналась в infographics модуле, но видимо станет json-processing модулем что ли
+    return surveyResponses;
   }
 
   public create(dto: CreateSurveyDto): Promise<Survey> {

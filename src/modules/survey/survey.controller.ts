@@ -13,6 +13,8 @@ import {
 } from '@nestjs/swagger';
 import { SurveyResponse } from './survey-response/survey-response.entity';
 import { SurveySchema } from './survey-schema/survey-schema.entity';
+import { Filtering, FilteringParams } from '../../common/features/filtering';
+import { Sorting, SortingParams } from '../../common/features/sorting';
 
 @ApiTags('Анкеты')
 @Controller('survey')
@@ -50,9 +52,18 @@ export class SurveyController extends BaseCrudController<
   @ApiNotFoundResponse({ description: 'Ответы анкеты не найдены.' })
   public async findResponsesBySurveyId(
     @Param('surveyId') surveyId: string,
+    @FilteringParams() filtering?: Filtering,
+    @SortingParams() sorting?: Sorting,
+    // @FilteringParams({ key: 'responsesDataFilter' })
+    // responsesDataFilter?: Filtering,
+    // @SortingParams({ key: 'responsesDataSorting' })
+    // responsesDataSorting?: Sorting,
   ): Promise<SurveyResponse[]> {
-    // todo pagination
-    return await this.service.getResponsesBySurveyId(surveyId);
+    return await this.service.getResponsesBySurveyId(
+      surveyId,
+      filtering,
+      sorting,
+    );
   }
 
   @Get(':id/schema')
