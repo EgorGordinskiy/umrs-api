@@ -6,15 +6,20 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { BaseService, EntityWithId } from '../service';
 import { DeepPartial } from 'typeorm';
 import { Sorting, SortingParams } from '../../decorators/params/SortingParams';
 import {
+  ApiFilteringQuery,
   Filtering,
   FilteringParams,
-} from '../../decorators/params/FilteringParms';
+} from '../../features/filtering';
+import {
+  ApiSortingQuery,
+  Sorting,
+  SortingParams,
+} from '../../features/sorting';
 
 export abstract class BaseCrudController<
   EntityType extends EntityWithId,
@@ -28,42 +33,8 @@ export abstract class BaseCrudController<
   @Get()
   @ApiOperation({ summary: 'Получить все записи' })
   @ApiOkResponse({ description: 'Записи успешно получены.' })
-  @ApiQuery({
-    name: 'sorting',
-    required: false,
-    type: 'string',
-    description: 'Способ сортировки',
-    examples: {
-      empty: {
-        value: undefined,
-        summary: 'Без сортировки',
-      },
-      decs: {
-        value: 'title:desc',
-        summary: 'Сортировка по убыванию',
-      },
-      asc: {
-        value: 'title:asc',
-        summary: 'Сортировка по возрастанию',
-      },
-    },
-  })
-  @ApiQuery({
-    name: 'filter',
-    required: false,
-    type: 'string',
-    description: 'Способ фильтрации',
-    examples: {
-      empty: {
-        value: undefined,
-        summary: 'Без фильтрации',
-      },
-      default: {
-        value: 'title:eq:A',
-        summary: 'Фильтр по значению',
-      },
-    },
-  })
+  @ApiSortingQuery()
+  @ApiFilteringQuery()
   public async findAll(
     @SortingParams() sorting?: Sorting,
     @FilteringParams() filter?: Filtering,

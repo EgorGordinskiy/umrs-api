@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiExtraModels, ApiOkResponse, getSchemaPath } from '@nestjs/swagger';
-import CursorPaginatedResponseDto from '../../cursor-pagination/cursor-paginated-response.dto';
+import CursorPaginatedResponseDto from '../../features/cursor-pagination/cursor-paginated-response.dto';
 
 export const ApiCursorPaginatedResponse = <TModel extends Type<any>>(
   model: TModel,

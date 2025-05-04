@@ -1,4 +1,4 @@
-import { seedDatabase } from '../functions/seedDatabase';
+import { seedDatabase } from '../functions';
 import { Logger } from '@nestjs/common';
 
 seedDatabase().catch((err) => {

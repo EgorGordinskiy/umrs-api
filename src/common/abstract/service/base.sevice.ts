@@ -2,8 +2,8 @@ import type { DeepPartial } from 'typeorm';
 // Импорт для JSDoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { NotFoundException } from '@nestjs/common';
-import { Sorting } from '../../decorators/params/SortingParams';
-import { Filtering } from '../../decorators/params/FilteringParms';
+import { Sorting } from '../../features/sorting';
+import { Filtering } from '../../features/filtering';
 
 /**
  * Интерфейс, который гарантирует наличие поля `id` в сущности.

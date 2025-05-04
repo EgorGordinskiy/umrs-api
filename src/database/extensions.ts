@@ -9,8 +9,8 @@ import {
   ILike,
   In,
 } from 'typeorm';
-import { Filtering } from '../common/decorators/params/FilteringParms';
-import { Sorting } from '../common/decorators/params/SortingParams';
+import { Filtering } from '../common/features/filtering';
+import { Sorting } from '../common/features/sorting';
 
 export enum FilterRule {
   EQUALS = 'eq',

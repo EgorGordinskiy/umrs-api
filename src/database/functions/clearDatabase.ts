@@ -3,7 +3,7 @@ import { dataSourceOptions } from '../../typeorm.config';
 import { DEVELOPMENT } from '../../common/constants';
 import { Logger } from '@nestjs/common';
 
-export default async function clearDatabase(
+export async function clearDatabase(
   dataSource = new DataSource(dataSourceOptions),
 ) {
   if (process.env.NODE_ENV !== DEVELOPMENT) {

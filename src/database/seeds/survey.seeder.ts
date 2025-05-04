@@ -12,7 +12,7 @@ import {
 import { Faker, faker } from '@faker-js/faker';
 import { SurveySchema } from '../../modules/survey/survey-schema/survey-schema.entity';
 
-export default class SurveySeeder implements Seeder {
+export class SurveySeeder implements Seeder {
   public async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,

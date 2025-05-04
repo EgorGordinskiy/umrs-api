@@ -7,9 +7,9 @@ import {
   In,
   Repository,
 } from 'typeorm';
-import { Sorting } from '../../decorators/params/SortingParams';
+import { Sorting } from '../../features/sorting';
 import { getOrder, getWhere } from '../../../database/extensions';
-import { Filtering } from '../../decorators/params/FilteringParms';
+import { Filtering } from '../../features/filtering';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
