@@ -4,14 +4,7 @@ import { CreateSurveyResponseDto } from './dto/create-response.dto';
 import { UpdateSurveyResponseDto } from './dto/update-response.dto';
 import { BaseCrudController } from '../../../common/abstract/controller';
 import { Controller } from '@nestjs/common';
-import { Controller, Get, Logger, Param, Query } from '@nestjs/common';
-import {
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Ответы на анкеты')
 @Controller('survey-response')
