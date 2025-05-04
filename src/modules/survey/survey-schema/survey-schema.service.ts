@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { SurveySchema } from './survey-schema.entity';
 import { BaseServiceImpl } from '../../../common/abstract';
-import { UpdateSurveySchemaDto } from '../dto/update-survey-schema.dto';
-import { CreateSurveySchemaDto } from '../dto/create-survey-schema.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { CreateSurveySchemaDto } from './dto/create-survey-schema.dto';
+import { UpdateSurveySchemaDto } from './dto/update-survey-schema.dto';
 
 @Injectable()
 export class SurveySchemaService extends BaseServiceImpl<

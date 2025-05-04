@@ -1,6 +1,7 @@
 import CursorPaginatedRequestDto from './cursor-paginated-request.dto';
 import { Repository } from 'typeorm';
 import CursorPaginatedResponseDto from './cursor-paginated-response.dto';
+import { Logger } from '@nestjs/common';
 
 interface CursorPaginatedEntity {
   id: string; // todo пока для строк только
@@ -15,6 +16,8 @@ export default async function getCursorPaginated<
   repository: Repository<MyEntity>,
 ): Promise<CursorPaginatedResponseDto<MyEntity>> {
   const { cursor, limit } = dto;
+  const log = new Logger(getCursorPaginated.name);
+  log.debug(`limit: ${limit}, cursor: ${cursor}`);
   const queryBuilder = repository
     .createQueryBuilder(entityName)
     .orderBy(`${entityName}.createdAt`, 'DESC') // todo может ещё тут updatedAt как-то прикрутить
