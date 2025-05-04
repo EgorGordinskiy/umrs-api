@@ -95,8 +95,16 @@ $ git push origin feature/your-feature-name
 - API ключи
 - другие важные настройки.
 
-[Файл для локальной разработки `.env.example`](https://github.com/B216-lab/umrs-platform/blob/main/.env.example).
 
+Пример `.env` файла:
+
+```ini
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your-username
+DB_PASSWORD=your-password
+DB_NAME=your-database-name
+```
 
 ## Работа с БД
 Для миграций и других операций с БД используется [CLI typeorm](https://typeorm.io/using-cli).
