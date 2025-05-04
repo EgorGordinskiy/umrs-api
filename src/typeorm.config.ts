@@ -16,7 +16,8 @@ export const dataSourceOptions: DataSourceOptions = {
   synchronize: process.env.NODE_ENV === DEVELOPMENT,
 
   // логирование
-  logging: ['error'],
+  logging:
+    process.env.NODE_ENV === DEVELOPMENT ? ['error', 'query'] : ['error'],
   maxQueryExecutionTime: 5000, // логировать запросы, выполняющиеся более 5 с
 };
 
