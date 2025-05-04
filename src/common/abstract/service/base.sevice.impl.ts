@@ -10,6 +10,10 @@ import {
 import { Sorting } from '../../features/sorting';
 import { getOrder, getWhere } from '../../../database/extensions';
 import { Filtering } from '../../features/filtering';
+import {
+  OffsetPaginated,
+  OffsetPaginatedResponse,
+} from '../../features/offset-pagination';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
@@ -25,6 +29,26 @@ export abstract class BaseServiceImpl<
 {
   protected readonly cache = 60000;
   constructor(protected readonly repository: Repository<T>) {}
+
+  public async findAllOffsetPaginated(
+    pagination: OffsetPaginated,
+    sorting?: Sorting,
+    filter?: Filtering,
+  ): Promise<OffsetPaginatedResponse<T>> {
+    const [items, total] = await this.repository.findAndCount({
+      order: sorting ? (getOrder(sorting) as FindOptionsOrder<T>) : undefined,
+      where: filter ? getWhere(filter) : undefined,
+      take: pagination.size,
+      skip: pagination.offset,
+      cache: this.cache,
+    });
+    return {
+      totalItems: total,
+      items: items,
+      page: pagination.page,
+      size: pagination.size,
+    };
+  }
 
   public async findAll(sorting?: Sorting, filter?: Filtering): Promise<T[]> {
     return this.repository.find({

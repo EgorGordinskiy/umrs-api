@@ -9,7 +9,12 @@ import {
 } from '@nestjs/swagger';
 import { BaseService, EntityWithId } from '../service';
 import { DeepPartial } from 'typeorm';
-import { Sorting, SortingParams } from '../../decorators/params/SortingParams';
+import {
+  ApiOffsetPagination,
+  OffsetPaginated,
+  OffsetPaginatedResponse,
+  OffsetPaginationParams,
+} from '../../features/offset-pagination';
 import {
   ApiFilteringQuery,
   Filtering,
@@ -29,6 +34,24 @@ export abstract class BaseCrudController<
   constructor(
     protected readonly service: BaseService<EntityType, CreateDto, UpdateDto>,
   ) {}
+
+  @Get('offset')
+  @ApiOperation({ summary: 'Получить все записи постранично через отступ.' })
+  @ApiOkResponse({ description: 'Записи успешно получены.' })
+  @ApiSortingQuery()
+  @ApiFilteringQuery()
+  @ApiOffsetPagination()
+  public async findAllOffsetPaginated(
+    @OffsetPaginationParams() pagination: OffsetPaginated,
+    @SortingParams() sorting?: Sorting,
+    @FilteringParams() filter?: Filtering,
+  ): Promise<OffsetPaginatedResponse<EntityType>> {
+    return await this.service.findAllOffsetPaginated(
+      pagination,
+      sorting,
+      filter,
+    );
+  }
 
   @Get()
   @ApiOperation({ summary: 'Получить все записи' })
