@@ -1,10 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Survey } from './survey.entity';
 import { SurveyService } from './survey.service';
 import { BaseCrudController } from '../../common/abstract/controller';
 import { CreateSurveyDto } from './dto/create-survey.dto';
 import { UpdateSurveyDto } from './dto/update-survey.dto';
 import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -41,6 +44,28 @@ export class SurveyController extends BaseCrudController<
     @Query('withResponses') withResponses: boolean = false,
   ): Promise<Survey> {
     return await this.service.findOne(id, withSchema, withResponses);
+  }
+
+  @Post()
+  @ApiOperation({ summary: 'Создать новую анкету' })
+  @ApiBody({ type: CreateSurveyDto })
+  @ApiCreatedResponse({ description: 'Анкета успешно создана.' })
+  @ApiBadRequestResponse({ description: 'Некорректные данные.' })
+  public async create(@Body() dto: CreateSurveyDto): Promise<Survey> {
+    return await super.create(dto);
+  }
+
+  @Put(':id')
+  @ApiOperation({ summary: 'Обновить анкету по её ID' })
+  @ApiBody({ type: UpdateSurveyDto })
+  @ApiParam({ name: 'id', type: String, description: 'ID анкеты' })
+  @ApiOkResponse({ description: 'Анкета успешно обновлена.' })
+  @ApiNotFoundResponse({ description: 'Анкета не найдена.' })
+  public async update(
+    @Param('id') id: number | string,
+    @Body() dto: UpdateSurveyDto,
+  ): Promise<Survey> {
+    return await super.update(id, dto);
   }
 
   @Get(':id/responses')

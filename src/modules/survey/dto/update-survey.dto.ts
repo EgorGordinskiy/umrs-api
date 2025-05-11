@@ -1,10 +1,7 @@
+import { PartialType } from '@nestjs/swagger';
+import { CreateSurveyDto } from './create-survey.dto';
+
 /**
  * DTO для обновления анкеты.
  */
-export class UpdateSurveyDto {
-  readonly id: string;
-  readonly title?: string;
-  readonly description?: string;
-  readonly isActive?: boolean;
-  readonly schemaId?: string;
-}
+export class UpdateSurveyDto extends PartialType(CreateSurveyDto) {}

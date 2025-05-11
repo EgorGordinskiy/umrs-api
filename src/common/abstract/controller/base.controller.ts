@@ -1,6 +1,7 @@
 import { Body, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
