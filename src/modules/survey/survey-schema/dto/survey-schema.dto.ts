@@ -12,7 +12,7 @@ export class SurveyActionDto implements SurveyAction {
   @ApiProperty({
     description: 'Тип действия над анкетой',
     type: String,
-    enum: [Object.values(SURVEY_ACTION_TYPE_VALUES)],
+    enum: Object.values(SURVEY_ACTION_TYPE_VALUES),
     default: Object.values(SURVEY_ACTION_TYPE_VALUES)[0],
   })
   @IsString()
