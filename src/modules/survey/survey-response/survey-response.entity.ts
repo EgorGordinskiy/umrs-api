@@ -20,7 +20,7 @@ export class SurveyResponse {
    * Уникальный идентификатор ответа
    */
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
   /**
    * Данные ответа в формате JSON
    * @example { "name": "Иван", "age": 30 }
