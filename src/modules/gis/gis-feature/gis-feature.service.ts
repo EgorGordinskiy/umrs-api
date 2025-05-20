@@ -27,11 +27,10 @@ export class GisFeatureService extends BaseServiceImpl<
     return this.repository.save(entity);
   }
 
-  // TODO: Вынести в абстракцию
   public async createMany(dto: CreateGisFeatureDto[]): Promise<GisFeature[]> {
-    const entities = await Promise.all(dto.map((dto) => this.make(dto)));
+    const makefunc = this.make.bind(this);
 
-    return this.repository.save(entities);
+    return super.createMany(dto, makefunc);
   }
 
   /**

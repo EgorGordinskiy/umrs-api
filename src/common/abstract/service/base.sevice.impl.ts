@@ -1,6 +1,19 @@
 import { NotFoundException } from '@nestjs/common';
-import type { BaseService, EntityWithId } from './base.sevice';
-import { type DeepPartial, type FindOptionsWhere, Repository } from 'typeorm';
+import { BaseService, EntityWithId } from './base.sevice';
+import {
+  type DeepPartial,
+  FindOptionsOrder,
+  type FindOptionsWhere,
+  In,
+  Repository,
+} from 'typeorm';
+import { Sorting } from '../../features/sorting';
+import { getOrder, getWhere } from '../../../database/extensions';
+import { Filtering } from '../../features/filtering';
+import {
+  OffsetPaginated,
+  OffsetPaginatedResponse,
+} from '../../features/offset-pagination';
 
 /**
  * Базовая реализация сервиса для работы с сущностями.
@@ -14,16 +27,41 @@ export abstract class BaseServiceImpl<
   UpdateDto extends DeepPartial<T>,
 > implements BaseService<T, CreateDto, UpdateDto>
 {
+  protected readonly cache = 60000;
   constructor(protected readonly repository: Repository<T>) {}
 
-  public async findAll(): Promise<T[]> {
-    return this.repository.find({ cache: 60000 });
+  public async findAllOffsetPaginated(
+    pagination: OffsetPaginated,
+    sorting?: Sorting,
+    filter?: Filtering,
+  ): Promise<OffsetPaginatedResponse<T>> {
+    const [items, total] = await this.repository.findAndCount({
+      order: sorting ? (getOrder(sorting) as FindOptionsOrder<T>) : undefined,
+      where: filter ? getWhere(filter) : undefined,
+      take: pagination.size,
+      skip: pagination.offset,
+      cache: this.cache,
+    });
+    return {
+      totalItems: total,
+      items: items,
+      page: pagination.page,
+      size: pagination.size,
+    };
   }
 
-  public async findOne(id: number): Promise<T> {
+  public async findAll(sorting?: Sorting, filter?: Filtering): Promise<T[]> {
+    return this.repository.find({
+      order: sorting ? (getOrder(sorting) as FindOptionsOrder<T>) : undefined,
+      where: filter ? getWhere(filter) : undefined,
+      cache: this.cache,
+    });
+  }
+
+  public async findOne(id: number | string): Promise<T> {
     const entity = await this.repository.findOne({
       where: { id } as FindOptionsWhere<T>,
-      cache: 60000,
+      cache: this.cache,
     });
 
     if (!entity) {
@@ -41,7 +79,16 @@ export abstract class BaseServiceImpl<
     return await this.repository.save(entity);
   }
 
-  public async update(id: number, dto: UpdateDto): Promise<T> {
+  public async createMany(
+    dto: CreateDto[],
+    makeFunc: (dto: CreateDto) => T | Promise<T>,
+  ): Promise<T[]> {
+    const entities = await Promise.all(dto.map((dto) => makeFunc(dto)));
+
+    return this.repository.save(entities);
+  }
+
+  public async update(id: number | string, dto: UpdateDto): Promise<T> {
     const entity = await this.findOne(id);
 
     Object.assign(entity, dto);
@@ -49,17 +96,34 @@ export abstract class BaseServiceImpl<
     return this.repository.save(entity);
   }
 
-  public async remove(id: number): Promise<void> {
+  public async remove(id: number | string): Promise<void> {
     const entity = await this.findOne(id);
 
     await this.repository.remove(entity);
   }
 
-  public async existsById(id: number): Promise<boolean> {
+  public async removeMany(ids: number[] | string[]) {
+    if (!ids.length) return;
+    let entities: T[];
+
+    if (typeof ids[0] === 'number') {
+      entities = await this.repository.findBy({
+        id: In(ids as number[]),
+      } as FindOptionsWhere<T>);
+    } else {
+      entities = await this.repository.findBy({
+        id: In(ids as string[]),
+      } as FindOptionsWhere<T>);
+    }
+
+    await this.repository.remove(entities);
+  }
+
+  public async existsById(id: number | string): Promise<boolean> {
     return this.repository.existsBy({ id } as FindOptionsWhere<T>);
   }
 
-  private get name() {
+  protected get name() {
     return this.repository.metadata.name;
   }
 }

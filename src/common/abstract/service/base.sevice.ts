@@ -1,10 +1,19 @@
 import type { DeepPartial } from 'typeorm';
+// Импорт для JSDoc
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { NotFoundException } from '@nestjs/common';
+import { Sorting } from '../../features/sorting';
+import { Filtering } from '../../features/filtering';
+import {
+  OffsetPaginated,
+  OffsetPaginatedResponse,
+} from '../../features/offset-pagination';
 
 /**
  * Интерфейс, который гарантирует наличие поля `id` в сущности.
  */
 export interface EntityWithId {
-  readonly id: number;
+  readonly id: unknown; // может быть string (uuid) или number
 }
 
 /**
@@ -20,16 +29,30 @@ export interface BaseService<
 > {
   /**
    * Получить все сущности.
+   * @param {Sorting} sorting - Способ сортировки.
+   * @param {Filtering} filter - Способ фильтрации.
    * @returns {Promise<T[]>} Список всех сущностей.
    */
-  findAll(): Promise<T[]>;
+  findAll(sorting?: Sorting, filter?: Filtering): Promise<T[]>;
+  /**
+   * Получить все сущности постранично через отступ.
+   * @param {OffsetPaginated} pagination - Информация о пагинации.
+   * @param {Sorting} sorting - Способ сортировки.
+   * @param {Filtering} filter - Способ фильтрации.
+   * @returns {Promise<OffsetPaginatedResponse<T>>} Список всех сущностей с пагинацией.
+   */
+  findAllOffsetPaginated(
+    pagination: OffsetPaginated,
+    sorting?: Sorting,
+    filter?: Filtering,
+  ): Promise<OffsetPaginatedResponse<T>>;
   /**
    * Найти сущность по ID.
    * @param {number} id - Идентификатор сущности.
    * @returns {Promise<T>} Найденная сущность.
    * @throws {NotFoundException} Если сущность не найдена.
    */
-  findOne(id: number): Promise<T>;
+  findOne(id: number | string): Promise<T>;
   /**
    * Создать новую сущность.
    * @param {CreateDto} createDto - DTO для создания сущности.
@@ -37,22 +60,38 @@ export interface BaseService<
    */
   create(createDto: CreateDto): Promise<T>;
   /**
+   * Создать несколько новых сущностей.
+   * @param {CreateDto[]} createDto - DTO для создания сущностей.
+   * @param {(dto: CreateDto) => T} makeFunc - Функция, которая создает сущность из DTO.
+   * @returns {Promise<T[]>} Созданные сущности.
+   */
+  createMany(
+    createDto: CreateDto[],
+    makeFunc: (dto: CreateDto) => T | Promise<T>,
+  ): Promise<T[]>;
+  /**
    * Обновить существующую сущность.
    * @param {number} id - Идентификатор сущности.
    * @param {UpdateDto} updateDto - DTO для обновления сущности.
    * @returns {Promise<T>} Обновленная сущность.
    */
-  update(id: number, updateDto: UpdateDto): Promise<T>;
+  update(id: number | string, updateDto: UpdateDto): Promise<T>;
   /**
    * Удалить сущность по ID.
    * @param {number} id - Идентификатор сущности.
    * @returns {Promise<void>}
    */
-  remove(id: number): Promise<void>;
+  remove(id: number | string): Promise<void>;
+  /**
+   * Удалить сущности по массиву идентификаторов.
+   * @param ids - Массив идентификаторов сущностей.
+   * @returns {Promise<void>}
+   */
+  removeMany(ids: number[] | string[]): Promise<void>;
   /**
    * Проверяет, существует ли сущность c заданным id.
    * @param {DeepPartial<T>} id - ID.
    * @returns {Promise<boolean>} `true`, если сущность существует, иначе `false`.
    */
-  existsById(id: number): Promise<boolean>;
+  existsById(id: number | string): Promise<boolean>;
 }

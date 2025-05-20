@@ -12,7 +12,7 @@ import {
 import { Faker, faker } from '@faker-js/faker';
 import { SurveySchema } from '../../modules/survey/survey-schema/survey-schema.entity';
 
-export default class SurveySeeder implements Seeder {
+export class SurveySeeder implements Seeder {
   public async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager,
@@ -48,7 +48,7 @@ export default class SurveySeeder implements Seeder {
     };
 
     const getRandomInt = () => {
-      return faker.number.int({ min: 1, max: 100 });
+      return faker.number.int({ min: 50, max: 500 });
     };
 
     const responsesTypeOne = await createSurveyType(
@@ -68,6 +68,34 @@ export default class SurveySeeder implements Seeder {
       getDataTypeFour,
     );
 
+    //region temp создать несколько анкет с hardcoded именами для теста сортировки
+    const partData = {
+      isActive: true,
+      schemaId: schema.id,
+    };
+
+    const sortTestSurvey1 = await surveyFactory.make({
+      title: 'A',
+      description: 'Test Description',
+      ...partData,
+    });
+
+    const sortTestSurvey2 = await surveyFactory.make({
+      title: 'B',
+      description: 'Test Description 2',
+      ...partData,
+    });
+
+    const sortTestSurvey3 = await surveyFactory.make({
+      title: 'C',
+      description: 'Test Description 3',
+      ...partData,
+    });
+
+    await surveysRepository.save(sortTestSurvey1);
+    await surveysRepository.save(sortTestSurvey3);
+    //endregion
+
     const surveyResponsesTypes = [
       responsesTypeOne,
       responsesTypeTwo,
@@ -85,5 +113,8 @@ export default class SurveySeeder implements Seeder {
       });
       await surveysRepository.save(survey);
     }
+
+    // специально сохранить непоследовательно от других анкет с фиксированными именами
+    await surveysRepository.save(sortTestSurvey2);
   }
 }
